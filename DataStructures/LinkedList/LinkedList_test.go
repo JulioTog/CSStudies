@@ -95,3 +95,79 @@ func BenchmarkPopBack(b *testing.B) {
 	}
 
 }
+
+func BenchmarkFind(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		b.StopTimer()
+		list := LinkedList{Head: nil}
+		for i := 0; i < 999999; i++ {
+			list.PushFront(i)
+		}
+		b.StartTimer()
+
+		list.Find(999998)
+	}
+
+}
+
+func BenchmarkErase(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		b.StopTimer()
+		list := LinkedList{Head: nil}
+		for i := 0; i < 999999; i++ {
+			list.PushFront(i)
+		}
+		b.StartTimer()
+
+		list.Erase(999990)
+	}
+
+}
+
+func BenchmarkEmpty(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		b.StopTimer()
+		list := LinkedList{Head: nil}
+		for i := 0; i < 999999; i++ {
+			list.PushFront(rand.Int())
+		}
+		b.StartTimer()
+
+		list.Empty()
+	}
+}
+
+func BenchmarkAddBefore(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		b.StopTimer()
+		list := LinkedList{Head: nil}
+		for i := 0; i < 999999; i++ {
+			list.PushFront(rand.Int())
+		}
+		nodo := list.Head
+		for i := 0; i < 3000; i++ {
+			nodo = nodo.next
+		}
+		b.StartTimer()
+
+		list.AddBefore(nodo, 1)
+	}
+}
+
+func BenchmarkAddAfter(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		b.StopTimer()
+		list := LinkedList{Head: nil}
+		for i := 0; i < 999999; i++ {
+			list.PushFront(rand.Int())
+		}
+		nodo := list.Head
+		for i := 0; i < 3000; i++ {
+			nodo = nodo.next
+		}
+		b.StartTimer()
+
+		list.AddAfter(nodo, 1)
+
+	}
+}
