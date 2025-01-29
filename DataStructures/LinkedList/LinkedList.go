@@ -9,8 +9,10 @@ type Node struct {
 }
 
 // Define la estructura del LinkedList que contiene un Head que apunta al primer nodo
+// Agregando ademas el Tail las operaciones de PushBack y TopBack se vuelve de complejidad O(1)
 type LinkedList struct {
 	Head *Node
+	Tail *Node
 }
 
 //Operaciones
@@ -59,11 +61,9 @@ func (list *LinkedList) PushBack(data int) {
 		return
 	}
 
-	nextNode := list.Head.next
-	for nextNode.next != nil {
-		nextNode = nextNode.next
-	}
-	nextNode.next = newNode
+	list.Tail.next = newNode
+	list.Tail = newNode
+
 }
 
 // retorna el ultimo item de la lista
@@ -73,17 +73,11 @@ func (list *LinkedList) TopBack() (data int, err error) {
 	if list.Head == nil {
 		return 0, fmt.Errorf("linked list is empty")
 	}
-	currentNode := list.Head
 
-	for currentNode.next != nil {
-		currentNode = currentNode.next
-	}
-	return currentNode.data, nil
+	return list.Tail.data, nil
 }
 
 // Elimina el ultimo item de la lista
-// En el caso de linked list sin tails se debe reccorrer toda la lista
-// Por lo que la complejidad es lineal O(n)
 func (list *LinkedList) PopBack() error {
 	if list.Head == nil {
 		return fmt.Errorf("linked list is empty")
