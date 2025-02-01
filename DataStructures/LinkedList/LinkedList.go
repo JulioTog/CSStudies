@@ -1,6 +1,8 @@
 package linkedlist
 
-import "fmt"
+import (
+	"fmt"
+)
 
 // Define estructura de un nodo donde cada nodo tiene el dato y la ref al siguiente nodo
 type Node struct {
@@ -23,6 +25,7 @@ func (list *LinkedList) PushFront(data int) {
 	newNode := &Node{data: data, next: list.Head}
 	if list.Head == nil {
 		list.Head = newNode
+		list.Tail = newNode
 		return
 	}
 
@@ -46,7 +49,12 @@ func (list *LinkedList) PopFront() error {
 		return fmt.Errorf("linked list is empty")
 	}
 
+	//en caso de que sea un unico nodo
+	if list.Head == list.Tail {
+		list.Tail = nil
+	}
 	list.Head = list.Head.next
+
 	return nil
 }
 
@@ -55,9 +63,10 @@ func (list *LinkedList) PopFront() error {
 //Por lo que la complejidad es lineal O(n)
 
 func (list *LinkedList) PushBack(data int) {
-	newNode := &Node{data: data, next: list.Head}
+	newNode := &Node{data: data, next: nil}
 	if list.Head == nil {
 		list.Head = newNode
+		list.Tail = newNode
 		return
 	}
 
@@ -86,8 +95,10 @@ func (list *LinkedList) PopBack() error {
 	currentNode := list.Head
 	nextNode := currentNode.next
 
+	//unico item
 	if nextNode == nil {
 		list.Head = nil
+		list.Tail = nil
 		return nil
 	}
 
@@ -97,24 +108,35 @@ func (list *LinkedList) PopBack() error {
 	}
 
 	currentNode.next = nil
+	list.Tail = currentNode
 
 	return nil
 }
 
 // Find encuentra el y devuelve el item que tiene determinado key
 // se debe recorrer todo el list por lo que presenta ona complejidad O(n)
-func (list *LinkedList) Find(key int) (Node, error) {
+func (list *LinkedList) Find(key int) (*Node, error) {
+
+	//lista vacia
+	if list.Head == nil {
+		return nil, fmt.Errorf("list is empty")
+	}
+
 	currentNode := list.Head
 
 	for currentNode.data != key {
+
 		currentNode = currentNode.next
+		if currentNode == nil {
+			break
+		}
 	}
 
 	if currentNode == nil {
-		return Node{}, fmt.Errorf("key not found")
+		return nil, fmt.Errorf("key not found")
 	}
 
-	return *currentNode, nil
+	return currentNode, nil
 }
 
 // la funcion Erase elimina el item que cumple con la key enviada.
@@ -122,6 +144,10 @@ func (list *LinkedList) Find(key int) (Node, error) {
 func (list *LinkedList) Erase(key int) error {
 	currentNode := list.Head
 
+	// Caso list emtpy
+	if currentNode == nil {
+		return fmt.Errorf("list is empty")
+	}
 	// en caso de que la key este en el primer item cambio el Head al siguiente item
 	if currentNode.data == key {
 		list.Head = currentNode.next
@@ -131,11 +157,20 @@ func (list *LinkedList) Erase(key int) error {
 	// recorro todo el listado busando el key, si no encuentro salgo por error
 	for currentNode.next.data != key {
 		currentNode = currentNode.next
+		if currentNode.next == nil {
+			break
+
+		}
 	}
-	if currentNode == nil {
+	if currentNode.next == nil {
 		return fmt.Errorf("key not found")
 	}
 
+	// si es ultimo
+	if currentNode.next == list.Tail {
+		list.Tail = currentNode
+		return nil
+	}
 	currentNode.next = currentNode.next.next
 	return nil
 
@@ -145,16 +180,18 @@ func (list *LinkedList) Erase(key int) error {
 // Simplemente se borra la referencia del HEAD lo que es una operacion de complejidad O(1)
 func (list *LinkedList) Empty() error {
 	list.Head = nil
+	list.Tail = nil
+
 	return nil
 }
 
 // Funcion AddBefore agrega un nuevo nodo despues del nodo indicado
 // Esta operacion es de complejidad O(1) ya que se puede acceder al next del nodo indicado
 func (list *LinkedList) AddBefore(nodo *Node, key int) (Node, error) {
-	currentNode := nodo
-	newNode := Node{data: key, next: currentNode.next}
 
-	currentNode.next = &newNode
+	newNode := Node{data: key, next: nodo.next}
+
+	nodo.next = &newNode
 	return newNode, nil
 }
 
